@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.25",
+    "@stripe/stripe-js": "^7.10.0",
     "@stripe/stripe-react-native": "^0.64.0",
     "@supabase/supabase-js": "^2.118.0",
     "expo": "~57.0.30",

@@ -100,7 +100,7 @@ function supabaseBookingService(client: NonNullable<typeof supabase>): BookingSe
         };
       }
 
-      const payment = await payWithPaymentSheet(data.clientSecret);
+      const payment = await payWithPaymentSheet(data.clientSecret, data.bookingId);
       if (payment.status === 'paid') return { status: 'booked', bookingId: data.bookingId };
       // Eine unbezahlte Reservation verfällt nach 30 Minuten von selbst.
       return payment;
