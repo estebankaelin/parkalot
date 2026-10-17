@@ -1,56 +1,41 @@
-# Welcome to your Expo app 👋
+# parkalot
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile App (iOS und Android) zum Teilen und Mieten privater Parkplätze. Gebaut mit React Native und Expo.
 
-## Get started
+Erster Einsatz ist der Pilot am Einsiedler Weihnachtsmarkt (27.11. bis 6.12.2026). Konzept, Storyboard und Feature-Priorisierung liegen im Miro-Board „parkalot MVP-Konzept“.
 
-1. Install dependencies
+## Stand
 
-   ```bash
-   npm install
-   ```
+Der Pilot-Ablauf für Mieter ist durchspielbar:
 
-2. Start the app
+1. **Suche:** Markttage wählen, freie Plätze nach Fussweg zum Klosterplatz sortiert.
+2. **Detail:** Beschreibung, Ausstattung, Tage wählen, Preis.
+3. **Buchen:** Kontrollschild eingeben, Preis inkl. 15 % Servicegebühr, bezahlen.
+4. **Gebucht:** Zugangsinfo und Route zum Parkplatz.
 
-   ```bash
-   npx expo start
-   ```
+Noch nicht angebunden:
 
-In the output, you'll find options to open the app in a
+- **Backend:** Plätze kommen aus `src/data/sample-spots.ts` (Beispieldaten), Buchungen liegen nur im Speicher.
+- **Zahlung:** `src/services/payments.ts` ist ein Testmodus ohne Belastung. Stripe braucht ein Backend, das den PaymentIntent erstellt.
+- **Karte:** Für die Kartenansicht auf Android braucht es einen Google-Maps-API-Schlüssel.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Entwickeln
 
 ```bash
-npm run reset-project
+npm install
+npm start          # Expo Dev Server, App in Expo Go oder Simulator öffnen
+npm run web        # Vorschau im Browser
+npm test           # Unit-Tests
+npm run typecheck
+npm run lint
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Struktur
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `src/app/` Screens (Expo Router, jede Datei ist eine Route)
+- `src/components/` UI-Bausteine
+- `src/domain/` Geschäftslogik ohne UI: Preise, Distanz, Suche, Tage
+- `src/config/pilot.ts` Daten und Ziel des Pilot-Events
+- `src/data/` Datenquelle (heute Beispieldaten)
+- `src/services/` Anbindung an externe Dienste (Zahlung)
+- `src/state/` App-Zustand
