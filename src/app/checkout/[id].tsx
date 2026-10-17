@@ -13,17 +13,13 @@ import { normalizeSwissPlate } from '@/domain/license-plate';
 import { parseDaysParam } from '@/domain/params';
 import { quoteForDays } from '@/domain/pricing';
 import { useTheme } from '@/hooks/use-theme';
-import { testPaymentService } from '@/services/payments';
-import { useBookings } from '@/state/bookings';
+import { bookingService } from '@/services/bookings';
 import { useSpot } from '@/state/use-spot';
-
-const payments = testPaymentService;
 
 export default function CheckoutScreen() {
   const params = useLocalSearchParams<{ id: string; days?: string }>();
   const spot = useSpot(params.id);
   const days = parseDaysParam(params.days);
-  const { addBooking } = useBookings();
   const theme = useTheme();
   const [plate, setPlate] = useState('');
   const [paying, setPaying] = useState(false);
@@ -51,23 +47,15 @@ export default function CheckoutScreen() {
     if (!normalizedPlate) return;
     setPaying(true);
     setError(null);
-    const result = await payments.pay(quote);
+    const result = await bookingService.book({ spot, days, licensePlate: normalizedPlate });
     setPaying(false);
-    if (!result.ok) {
+    if (result.status === 'error') {
       setError(result.message);
       return;
     }
-    const bookingId = result.reference;
-    addBooking({
-      id: bookingId,
-      spotId: spot.id,
-      days,
-      licensePlate: normalizedPlate,
-      quote,
-      status: 'bestaetigt',
-      createdAt: new Date().toISOString(),
-    });
-    router.replace({ pathname: '/booking/[id]', params: { id: bookingId } });
+    if (result.status === 'booked') {
+      router.replace({ pathname: '/booking/[id]', params: { id: result.bookingId } });
+    }
   };
 
   return (
@@ -106,9 +94,9 @@ export default function CheckoutScreen() {
         <PriceSummary quote={quote} />
       </ThemedView>
 
-      {payments.isTestMode && (
+      {bookingService.isTestMode && (
         <ThemedText type="small" themeColor="textSecondary">
-          Testmodus: Es wird kein Geld belastet. Stripe wird als Nächstes angebunden.
+          Testmodus mit Beispieldaten: Es wird kein Geld belastet.
         </ThemedText>
       )}
       {error && <ThemedText type="small">{error}</ThemedText>}

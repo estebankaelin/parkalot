@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { formatChf, quoteForDays } from '@/domain/pricing';
+import { formatChf, PLATFORM_FEE_RATE, quoteForDays } from '@/domain/pricing';
 
 describe('quoteForDays', () => {
   it('rechnet 15 % Servicegebühr auf den Mieterpreis', () => {
@@ -25,5 +25,17 @@ describe('formatChf', () => {
   it('formatiert Rappen als Franken', () => {
     expect(formatChf(6900)).toBe('CHF 69.00');
     expect(formatChf(1505)).toBe('CHF 15.05');
+  });
+});
+
+describe('Gebühr in der Datenbank', () => {
+  it('stimmt mit PLATFORM_FEE_RATE überein', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('fs') as typeof import('fs');
+    const migration = fs.readFileSync(
+      `${__dirname}/../../../supabase/migrations/20261017120000_pilot_schema.sql`,
+      'utf8',
+    );
+    expect(migration).toContain(`round(subtotal * ${PLATFORM_FEE_RATE})`);
   });
 });

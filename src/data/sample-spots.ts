@@ -18,7 +18,6 @@ export const SAMPLE_SPOTS: ParkingSpot[] = [
     pricePerDayRappen: 2000,
     availableDays: PILOT_DAYS,
     description: 'Einzelgarage im Hinterhof, ruhige Zufahrt.',
-    accessInstructions: 'Garagentor Nr. 3, Code wird nach der Buchung per SMS gesendet.',
     hostFirstName: 'Sandra',
   },
   {
@@ -33,7 +32,6 @@ export const SAMPLE_SPOTS: ParkingSpot[] = [
     pricePerDayRappen: 1500,
     availableDays: PILOT_DAYS.filter((_, i) => i % 2 === 0),
     description: 'Markierter Platz Nr. 7, auch für Kleinbusse.',
-    accessInstructions: 'Platz Nr. 7 links neben dem Eingang.',
     hostFirstName: 'Marco',
   },
   {
@@ -48,7 +46,6 @@ export const SAMPLE_SPOTS: ParkingSpot[] = [
     pricePerDayRappen: 2800,
     availableDays: PILOT_DAYS,
     description: 'Tiefgarage mit Wallbox, Strom inklusive.',
-    accessInstructions: 'Einfahrt über Rampe, Platz 14. Tor öffnet mit Code.',
     hostFirstName: 'Nadia',
   },
   {
@@ -66,7 +63,14 @@ export const SAMPLE_SPOTS: ParkingSpot[] = [
       return weekday === 0 || weekday === 6;
     }),
     description: 'Firmenareal, an Samstagen und Sonntagen frei.',
-    accessInstructions: 'Plätze 20 bis 25, Schranke ist am Wochenende offen.',
     hostFirstName: 'Beispiel AG',
   },
 ];
+
+/** Zugangsinfo, die erst nach der Buchung angezeigt wird. */
+export const SAMPLE_ACCESS_INSTRUCTIONS: Record<string, string> = {
+  'beispiel-1': 'Garagentor Nr. 3, Code wird nach der Buchung per SMS gesendet.',
+  'beispiel-2': 'Platz Nr. 7 links neben dem Eingang.',
+  'beispiel-3': 'Einfahrt über Rampe, Platz 14. Tor öffnet mit Code.',
+  'beispiel-4': 'Plätze 20 bis 25, Schranke ist am Wochenende offen.',
+};

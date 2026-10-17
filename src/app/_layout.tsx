@@ -1,13 +1,13 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
-import { BookingsProvider } from '@/state/bookings';
+import { PaymentsProvider } from '@/components/payments-provider';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <BookingsProvider>
+      <PaymentsProvider>
         <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
           <Stack.Screen name="index" options={{ title: 'parkalot' }} />
           <Stack.Screen name="spot/[id]" options={{ title: 'Parkplatz' }} />
@@ -17,7 +17,7 @@ export default function RootLayout() {
             options={{ title: 'Gebucht', headerBackVisible: false, gestureEnabled: false }}
           />
         </Stack>
-      </BookingsProvider>
+      </PaymentsProvider>
     </ThemeProvider>
   );
 }
