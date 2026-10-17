@@ -1,18 +1,23 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { BookingsProvider } from '@/state/bookings';
 
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
+export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
+      <BookingsProvider>
+        <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
+          <Stack.Screen name="index" options={{ title: 'parkalot' }} />
+          <Stack.Screen name="spot/[id]" options={{ title: 'Parkplatz' }} />
+          <Stack.Screen name="checkout/[id]" options={{ title: 'Buchen' }} />
+          <Stack.Screen
+            name="booking/[id]"
+            options={{ title: 'Gebucht', headerBackVisible: false, gestureEnabled: false }}
+          />
+        </Stack>
+      </BookingsProvider>
     </ThemeProvider>
   );
 }

@@ -1,98 +1,74 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
+import { DayPicker } from '@/components/day-picker';
+import { Screen } from '@/components/screen';
+import { SpotCard } from '@/components/spot-card';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { PILOT_DAYS, PILOT_EVENT } from '@/config/pilot';
+import { searchSpots } from '@/domain/search';
+import type { IsoDay } from '@/domain/types';
+import { useSpots } from '@/state/use-spot';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+export default function SearchScreen() {
+  const spots = useSpots();
+  const [days, setDays] = useState<IsoDay[]>([PILOT_DAYS[0]]);
+  const results = spots ? searchSpots(spots, PILOT_EVENT.destination, days) : [];
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
+    <Screen>
+      <View style={styles.intro}>
+        <ThemedText type="subtitle">{PILOT_EVENT.name}</ThemedText>
+        <ThemedText themeColor="textSecondary">
+          Privaten Parkplatz in Gehdistanz zum {PILOT_EVENT.destinationLabel} buchen und ohne
+          Suchen direkt hinfahren.
         </ThemedText>
+      </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+      <View style={styles.section}>
+        <ThemedText type="smallBold">An welchen Tagen?</ThemedText>
+        <DayPicker days={PILOT_DAYS} selected={days} onChange={setDays} />
+      </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      {!spots ? (
+        <ActivityIndicator />
+      ) : days.length === 0 ? (
+        <ThemedText themeColor="textSecondary">Wähle mindestens einen Tag.</ThemedText>
+      ) : results.length === 0 ? (
+        <ThemedText themeColor="textSecondary">
+          Für diese Tage ist kein Platz mehr frei. Versuch es mit weniger Tagen.
+        </ThemedText>
+      ) : (
+        <View style={styles.section}>
+          <ThemedText type="smallBold">
+            {results.length} {results.length === 1 ? 'Platz' : 'Plätze'} frei
+          </ThemedText>
+          {results.map((result) => (
+            <SpotCard
+              key={result.spot.id}
+              result={result}
+              destinationLabel={PILOT_EVENT.destinationLabel}
+              onPress={() =>
+                router.push({
+                  pathname: '/spot/[id]',
+                  params: { id: result.spot.id, days: days.join(',') },
+                })
+              }
+            />
+          ))}
+        </View>
+      )}
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  intro: {
+    gap: Spacing.two,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  section: {
+    gap: Spacing.two,
   },
 });
