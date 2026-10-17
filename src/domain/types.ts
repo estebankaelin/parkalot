@@ -23,8 +23,6 @@ export type ParkingSpot = {
   pricePerDayRappen: number;
   availableDays: IsoDay[];
   description: string;
-  /** Wird erst nach bezahlter Buchung angezeigt. */
-  accessInstructions: string;
   hostFirstName: string;
 };
 
@@ -37,7 +35,8 @@ export type PriceQuote = {
   totalRappen: number;
 };
 
-export type BookingStatus = 'bestaetigt' | 'storniert';
+/** ausstehend: reserviert, Zahlung noch nicht bestätigt. */
+export type BookingStatus = 'ausstehend' | 'bestaetigt' | 'storniert';
 
 export type Booking = {
   id: string;

@@ -13,7 +13,7 @@ import type { IsoDay } from '@/domain/types';
 import { useSpots } from '@/state/use-spot';
 
 export default function SearchScreen() {
-  const spots = useSpots();
+  const { spots, error } = useSpots();
   const [days, setDays] = useState<IsoDay[]>([PILOT_DAYS[0]]);
   const results = spots ? searchSpots(spots, PILOT_EVENT.destination, days) : [];
 
@@ -32,7 +32,9 @@ export default function SearchScreen() {
         <DayPicker days={PILOT_DAYS} selected={days} onChange={setDays} />
       </View>
 
-      {!spots ? (
+      {error ? (
+        <ThemedText themeColor="textSecondary">{error}</ThemedText>
+      ) : !spots ? (
         <ActivityIndicator />
       ) : days.length === 0 ? (
         <ThemedText themeColor="textSecondary">Wähle mindestens einen Tag.</ThemedText>
