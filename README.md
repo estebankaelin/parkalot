@@ -52,6 +52,12 @@ npm run typecheck
 npm run lint
 ```
 
+## Testversion im Browser
+
+Jeder Stand auf `main` wird automatisch als Web-Vorschau auf https://estebankaelin.github.io/parkalot/ veröffentlicht (Workflow `web-preview.yml`, Supabase und Stripe im Testmodus). Im Browser ersetzt das Stripe Payment Element das Payment Sheet der App. Bezahlen mit der Testkarte `4242 4242 4242 4242`, beliebiges künftiges Ablaufdatum und CVC.
+
+Einmalig nötig: unter **Settings > Pages** als Source **GitHub Actions** wählen.
+
 ## Struktur
 
 - `src/app/` Screens (Expo Router, jede Datei ist eine Route)

@@ -1,0 +1,50 @@
+name: Web-Vorschau
+
+# Baut die App für den Browser und veröffentlicht sie auf GitHub Pages:
+# https://estebankaelin.github.io/parkalot/
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Nur veröffentlichbare Schlüssel (Testmodus), die landen ohnehin im App-Bundle.
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: https://oudshnxjfjhgqyyfcpzu.supabase.co
+      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_Lja-Y201qSJI2pX-paCGdg_3NLnYZDH
+      EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_51URWzNKzrKf8Bg4HUtT1VzJRvEJqZDIs3nEkUh0QEbAOqEuGyESJ05cX2IQmcZr160rA4mJOiUkMovAFDuWR25SQ00LCpJa2zo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # GitHub Pages liefert die Seite unter /parkalot aus und kennt keine dynamischen Routen,
+      # deshalb eine Single-Page-App mit 404.html als Rückfall für Links wie /spot/<id>.
+      - name: Für GitHub Pages exportieren
+        run: |
+          jq '.expo.experiments.baseUrl = "/parkalot" | .expo.web.output = "single"' app.json > app.pages.json
+          mv app.pages.json app.json
+          npx expo export --platform web
+          cp dist/index.html dist/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
